@@ -254,6 +254,8 @@ export function ComparisonModal({ isOpen, onClose, items, type }: ComparisonModa
                     {type === 'versions' && <div><strong>Type:</strong> {item.type || 'Modification'}</div>}
                     {type === 'versions' && <div><strong>Statut:</strong> {item.status || 'En vigueur'}</div>}
                     {type === 'versions' && <div><strong>Institution:</strong> {item.institution || 'Institution'}</div>}
+                    {type === 'versions' && item.stepsCount && <div><strong>Étapes:</strong> {item.stepsCount}</div>}
+                    {type === 'versions' && item.documentsCount && <div><strong>Documents:</strong> {item.documentsCount}</div>}
                     {type === 'searches' && <div><strong>Résultats:</strong> {item.results || Math.floor(Math.random() * 100)}</div>}
                     <div><strong>Taille:</strong> {Math.floor(Math.random() * 50) + 10} KB</div>
                   </div>
@@ -264,13 +266,23 @@ export function ComparisonModal({ isOpen, onClose, items, type }: ComparisonModa
                 <div className="text-sm font-mono">
                   {type === 'versions' && (
                     <div>
-                      <strong>📄 {item.textName || 'Document juridique'} - {item.version || `v${index + 1}`}</strong>
+                      <strong>📄 {item.textName || item.procedureName || 'Document juridique'} - {item.version || `v${index + 1}`}</strong>
                       <br /><br />
                       <strong>Modifications apportées:</strong><br />
                       {item.changes || 'Aucun détail de modification fourni.'}
                       <br /><br />
                       {index === 1 && <span className="text-red-600 font-bold">[DIFFÉRENCE] </span>}
-                      Publié au Journal Officiel {item.journalNumber || 'JO N°XX'}, page {item.pageNumber || 'XX-XX'}.
+                      {item.journalNumber ? (
+                        `Publié au Journal Officiel ${item.journalNumber}, page ${item.pageNumber || 'XX-XX'}.`
+                      ) : (
+                        `Procédure validée par ${item.validatedBy || 'l\'administration'}.`
+                      )}
+                      {item.comments && (
+                        <>
+                          <br /><br />
+                          <strong>Commentaires:</strong> {item.comments}
+                        </>
+                      )}
                     </div>
                   )}
                   {type === 'searches' && `Recherche: "${item.query || 'terme de recherche'}"...`}

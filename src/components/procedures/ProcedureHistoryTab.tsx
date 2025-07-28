@@ -5,6 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
+  useFunctionalModals, 
+  DocumentViewModal, 
+  DownloadModal, 
+  ComparisonModal
+} from '@/components/modals/FunctionalModals';
+import { 
   History, 
   Search, 
   Filter, 
@@ -156,6 +162,7 @@ const mockProcedureVersions: ProcedureVersion[] = [
 ];
 
 export function ProcedureHistoryTab() {
+  const { modals, openDocumentView, openDownload, openComparison, closeModal } = useFunctionalModals();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedType, setSelectedType] = useState('');
@@ -228,12 +235,15 @@ export function ProcedureHistoryTab() {
 
   const handleCompareVersions = () => {
     if (selectedVersions.length >= 2) {
-      console.log('Comparaison des versions:', selectedVersions);
-      // Ici on implémenterait la logique de comparaison
+      const versionsToCompare = mockProcedureVersions.filter(v => selectedVersions.includes(v.id));
+      openComparison(versionsToCompare, 'versions');
+    } else {
+      alert('⚠️ Veuillez sélectionner au moins 2 versions pour effectuer une comparaison.');
     }
   };
 
   return (
+    <>
     <div className="space-y-6">
       {/* Filtres et recherche */}
       <Card>
@@ -477,6 +487,31 @@ export function ProcedureHistoryTab() {
           )}
         </CardContent>
       </Card>
+      
+      {/* Modales fonctionnelles */}
+      {modals.documentView.document && (
+        <DocumentViewModal
+          isOpen={modals.documentView.isOpen}
+          onClose={() => closeModal('documentView')}
+          document={modals.documentView.document}
+        />
+      )}
+      
+      {modals.download.document && (
+        <DownloadModal
+          isOpen={modals.download.isOpen}
+          onClose={() => closeModal('download')}
+          document={modals.download.document}
+        />
+      )}
+      
+      <ComparisonModal
+        isOpen={modals.comparison.isOpen}
+        onClose={() => closeModal('comparison')}
+        items={modals.comparison.items}
+        type={modals.comparison.type}
+      />
     </div>
+    </>
   );
 }
