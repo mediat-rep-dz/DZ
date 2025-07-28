@@ -251,6 +251,9 @@ export function ComparisonModal({ isOpen, onClose, items, type }: ComparisonModa
                   <div className="space-y-2 text-sm">
                     <div><strong>Date:</strong> {item.date || new Date().toLocaleDateString()}</div>
                     {type === 'versions' && <div><strong>Auteur:</strong> {item.author || 'Système'}</div>}
+                    {type === 'versions' && <div><strong>Type:</strong> {item.type || 'Modification'}</div>}
+                    {type === 'versions' && <div><strong>Statut:</strong> {item.status || 'En vigueur'}</div>}
+                    {type === 'versions' && <div><strong>Institution:</strong> {item.institution || 'Institution'}</div>}
                     {type === 'searches' && <div><strong>Résultats:</strong> {item.results || Math.floor(Math.random() * 100)}</div>}
                     <div><strong>Taille:</strong> {Math.floor(Math.random() * 50) + 10} KB</div>
                   </div>
@@ -259,13 +262,27 @@ export function ComparisonModal({ isOpen, onClose, items, type }: ComparisonModa
               
               <div className="border rounded-lg p-4 max-h-64 overflow-y-auto bg-gray-50">
                 <div className="text-sm font-mono">
-                  {type === 'versions' && `Version ${item.version || index + 1} du document...`}
+                  {type === 'versions' && (
+                    <div>
+                      <strong>📄 {item.textName || 'Document juridique'} - {item.version || `v${index + 1}`}</strong>
+                      <br /><br />
+                      <strong>Modifications apportées:</strong><br />
+                      {item.changes || 'Aucun détail de modification fourni.'}
+                      <br /><br />
+                      {index === 1 && <span className="text-red-600 font-bold">[DIFFÉRENCE] </span>}
+                      Publié au Journal Officiel {item.journalNumber || 'JO N°XX'}, page {item.pageNumber || 'XX-XX'}.
+                    </div>
+                  )}
                   {type === 'searches' && `Recherche: "${item.query || 'terme de recherche'}"...`}
                   {type === 'documents' && `Contenu du document ${item.title}...`}
-                  <br /><br />
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                  Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  {index === 1 && ' [DIFFÉRENCE] Ut enim ad minim veniam, quis nostrud exercitation.'}
+                  {type !== 'versions' && (
+                    <>
+                      <br /><br />
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                      {index === 1 && ' [DIFFÉRENCE] Ut enim ad minim veniam, quis nostrud exercitation.'}
+                    </>
+                  )}
                 </div>
               </div>
             </div>

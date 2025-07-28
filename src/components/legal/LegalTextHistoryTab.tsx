@@ -276,7 +276,7 @@ export function LegalTextHistoryTab() {
 
   const handleCompareVersions = () => {
     if (selectedVersions.length >= 2) {
-      const versionsToCompare = history.filter(v => selectedVersions.includes(v.id));
+      const versionsToCompare = mockLegalTextVersions.filter(v => selectedVersions.includes(v.id));
       openComparison(versionsToCompare, 'versions');
     } else {
       alert('⚠️ Veuillez sélectionner au moins 2 versions pour effectuer une comparaison.');
