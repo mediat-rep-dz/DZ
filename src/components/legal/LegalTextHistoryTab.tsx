@@ -6,6 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
+  useFunctionalModals, 
+  DocumentViewModal, 
+  DownloadModal, 
+  ComparisonModal
+} from '@/components/modals/FunctionalModals';
+import { 
   History, 
   Search, 
   Filter, 
@@ -181,6 +187,7 @@ const mockLegalTextVersions: LegalTextVersion[] = [
 ];
 
 export function LegalTextHistoryTab() {
+  const { modals, openDocumentView, openDownload, openComparison, closeModal } = useFunctionalModals();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTextType, setSelectedTextType] = useState('');
   const [selectedModificationType, setSelectedModificationType] = useState('');
@@ -270,24 +277,14 @@ export function LegalTextHistoryTab() {
   const handleCompareVersions = () => {
     if (selectedVersions.length >= 2) {
       const versionsToCompare = history.filter(v => selectedVersions.includes(v.id));
-      const versionsList = versionsToCompare.map(v => `v${v.version} (${v.date})`).join(' vs ');
-      
-      alert(`📊 COMPARAISON DE VERSIONS INITIÉE\n\nVersions sélectionnées: ${versionsList}\n\nType de comparaison:\n• Différences de contenu\n• Modifications de structure\n• Historique des changements\n\nLa comparaison détaillée s'ouvre dans un nouvel onglet...`);
-      
-      // Simuler l'ouverture d'une fenêtre de comparaison
-      const comparisonData = {
-        versions: versionsToCompare,
-        timestamp: new Date().toISOString(),
-        type: 'legal-text-comparison'
-      };
-      
-      console.log('🔍 Données de comparaison:', comparisonData);
+      openComparison(versionsToCompare, 'versions');
     } else {
       alert('⚠️ Veuillez sélectionner au moins 2 versions pour effectuer une comparaison.');
     }
   };
 
   return (
+    <>
     <div className="space-y-6">
       {/* Filtres et recherche */}
       <Card>
@@ -562,7 +559,32 @@ export function LegalTextHistoryTab() {
             </div>
           )}
         </CardContent>
-      </Card>
+            </Card>
+      
+      {/* Modales fonctionnelles */}
+      {modals.documentView.document && (
+        <DocumentViewModal
+          isOpen={modals.documentView.isOpen}
+          onClose={() => closeModal('documentView')}
+          document={modals.documentView.document}
+        />
+      )}
+      
+      {modals.download.document && (
+        <DownloadModal
+          isOpen={modals.download.isOpen}
+          onClose={() => closeModal('download')}
+          document={modals.download.document}
+        />
+      )}
+      
+      <ComparisonModal
+        isOpen={modals.comparison.isOpen}
+        onClose={() => closeModal('comparison')}
+        items={modals.comparison.items}
+               type={modals.comparison.type}
+       />
     </div>
+    </>
   );
 }

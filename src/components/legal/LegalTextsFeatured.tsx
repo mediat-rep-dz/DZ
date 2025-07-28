@@ -4,8 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, Eye, Download } from 'lucide-react';
+import { 
+  useFunctionalModals, 
+  DocumentViewModal, 
+  DownloadModal, 
+  ComparisonModal
+} from '@/components/modals/FunctionalModals';
 
 export function LegalTextsFeatured() {
+  const { modals, openDocumentView, openDownload, closeModal } = useFunctionalModals();
+  
   const featuredTexts = [
     {
       id: 1,
@@ -40,6 +48,7 @@ export function LegalTextsFeatured() {
   ];
 
   return (
+    <>
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Star className="w-6 h-6 text-yellow-500" />
@@ -79,14 +88,11 @@ export function LegalTextsFeatured() {
                     size="sm" 
                     className="flex-1"
                     onClick={() => {
-                      console.log('Consulting featured legal text:', text.title);
-                      window.dispatchEvent(new CustomEvent('view-legal-text', { 
-                        detail: { 
-                          textId: text.id,
-                          title: text.title,
-                          type: text.type || 'Texte juridique'
-                        }
-                      }));
+                      openDocumentView({
+                        id: text.id.toString(),
+                        title: text.title,
+                        type: text.type || 'Texte juridique'
+                      });
                     }}
                   >
                     <Eye className="w-4 h-4 mr-1" />
@@ -96,14 +102,10 @@ export function LegalTextsFeatured() {
                     size="sm" 
                     className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                     onClick={() => {
-                      console.log('Downloading featured legal text:', text.title);
-                      window.dispatchEvent(new CustomEvent('download-legal-text', { 
-                        detail: { 
-                          textId: text.id,
-                          title: text.title,
-                          format: 'pdf'
-                        }
-                      }));
+                      openDownload({
+                        title: text.title,
+                        type: text.type || 'Texte juridique'
+                      });
                     }}
                   >
                     <Download className="w-4 h-4 mr-1" />
@@ -116,5 +118,30 @@ export function LegalTextsFeatured() {
         ))}
       </div>
     </div>
+    
+    {/* Modales fonctionnelles */}
+    {modals.documentView.document && (
+      <DocumentViewModal
+        isOpen={modals.documentView.isOpen}
+        onClose={() => closeModal('documentView')}
+        document={modals.documentView.document}
+      />
+    )}
+    
+    {modals.download.document && (
+      <DownloadModal
+        isOpen={modals.download.isOpen}
+        onClose={() => closeModal('download')}
+        document={modals.download.document}
+      />
+    )}
+    
+    <ComparisonModal
+      isOpen={modals.comparison.isOpen}
+      onClose={() => closeModal('comparison')}
+      items={modals.comparison.items}
+      type={modals.comparison.type}
+    />
+    </>
   );
 }
